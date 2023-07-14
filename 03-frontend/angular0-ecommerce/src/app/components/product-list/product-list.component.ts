@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Product } from 'src/app/common/product';
 import { ProductService } from 'src/app/services/product.service';
 
@@ -9,13 +10,22 @@ import { ProductService } from 'src/app/services/product.service';
 })
 export class ProductListComponent {
   products: Product[] = [];
-  constructor(private productService: ProductService) {}
+  currentCategotyId: number=0
+  constructor(private productService: ProductService,
+    private route:ActivatedRoute) {}
   ngOnInit() {
-    this.listProducts();
-    console.log(this.products,"productList")
+    this.route.params.subscribe(() =>{
+      this.listProducts();  
+    
+    })
+    
+  
   }
   listProducts() {
-    this.productService.getProductList().subscribe((data) => {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    this.currentCategotyId = idParam ? +idParam : 1;
+    console.log(this.currentCategotyId);
+    this.productService.getProductList(this.currentCategotyId).subscribe((data) => {
       this.products = data;
       console.log('Inside subscribe callback:', this.products)
     });
